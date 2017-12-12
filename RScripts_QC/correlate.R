@@ -1,0 +1,12 @@
+library("ggplot2")
+rpkm=read.table("",header=TRUE,sep='\t')
+a <- ggplot(sl2_205,aes(SL2.205_R_TruSeq_mRNA_RPKM,SL2.205_R_RPKM))
+fit <- lm(SL2.205_R_RPKM ~ SL2.205_R_TruSeq_mRNA_RPKM, data=sl2_205)
+a + geom_point(color="gray") + geom_smooth(method=lm) + scale_x_log10() + scale_y_log10() + geom_rug(color="gray") + xlab(label = "log10(TruSeq RPKMs)") + ylab(label = "log10(RNAAC RPKMs)") + ggtitle("SL2 205",subtitle = paste("R_square=", format(summary(fit)$adj.r.squared,digits=2),sep=""))
+ggsave("C:/Users/m133293/Documents/service_line/SL2_205_correlation.png",width = 6, height = 6)
+
+sl2_205_counts=read.table("Y:/bsi/secondary/Lazaridis_Konstantinos_knl01/config/170202_K00203_0087_AHHVYYBBXX/RNAAC_TruSeq/SL2-205_both_counts.txt",header=TRUE,sep='\t')
+a <- ggplot(sl2_205_counts,aes(TruSeq,RNAAC))
+fit <- lm(RNAAC ~ TruSeq, data=sl2_205_counts)
+a + geom_point(color="gray") + geom_smooth(method=lm) + scale_x_log10() + scale_y_log10() + geom_rug(color="gray") + xlab(label = "log10(TruSeq Counts)") + ylab(label = "log10(RNAAC Counts)") + ggtitle("SL2 205",subtitle = paste("R_square=", format(summary(fit)$adj.r.squared,digits=2),sep=""))
+ggsave("C:/Users/m133293/Documents/service_line/SL2_205_counts.png",width = 6, height = 6)
