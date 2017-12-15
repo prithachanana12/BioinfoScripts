@@ -1,12 +1,12 @@
 #!/bin/sh
 
-exec &> $4/logfile.txt
 if [ $# != 4 ]
 then
 	echo -e "Usage: Run StringTie in batch mode\n StringTie.sh <path to BAM> <samples (colon separated)> <reference annotation file> <path to output directory>"
 else
-    set -x
-    echo `date`
+	exec &> $4/logfile.txt
+    	set -x
+    	echo `date`
 	bam=$1
 	sample=$2
 	ref_gtf=$3
