@@ -50,9 +50,9 @@ cds <- calcNormFactors( cds )
 # between each pair of samples
 # is the biological coefficient of variation. Default setting, top=500
 grp_color<- c (rep("red",num_of_ctrl),rep("blue",num_of_case))
-png(file="MDS_plot.png")
-plotMDS(cds, top=1000, labels=colnames(cds$counts), main="MDS Plot for Count Data", ndim=2, dim.plot=c(1,2), cex=0.7, col=grp_color)
-dev.off()
+#png(file="MDS_plot.png")
+#plotMDS(cds, top=1000, labels=colnames(cds$counts), main="MDS Plot for Count Data", ndim=2, dim.plot=c(1,2), cex=0.7, col=grp_color)
+#dev.off()
 # find the value for common dispersion across all samples
 cds <- estimateCommonDisp( cds )
 #cds$common.dispersion
