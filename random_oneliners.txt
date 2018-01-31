@@ -1,0 +1,99 @@
+counting features:
+	exons: can use featureCounts for both rna-seq and dna-seq data (use with -O option)
+	genes: can be used with rna-seq data because rna-seq just considers exons and introns are not sequenced at all - featureCounts skips over introns so cannot be used with dna-seq data
+	use bedtools coverageBed with your input bams and a bed file with gene coordinates
+
+running new version of patternCNV if old one ran on somatic samples (happens if less than 3 germline samples, or if more than 3 germline samples but more than one tumor for each germline sample):
+	use call_cnvs.allsamples job - present in .tmp/cnv/logs - "/usr/local/biotools/r/R-3.1.1/bin/Rscript --vanilla /projects/bsi/bioinf_int/s112423.PatternCNV/tags/1.1.2//somatic.cnv.R /data2/bsi/secondary//Braggio_Esteban_m037525/exome/160226-EX-EB/.tmp/cnv/ /projects/bsi/bioinf_int/s112423.PatternCNV/tags/1.1.2//Rlib /data2/bsi/secondary//Braggio_Esteban_m037525/exome/160226-EX-EB/.tmp/cnv//configs/config.ini" 
+	hack into the somatic.cnv.R file - change "if(germline_count >= 3 & !anyDuplicated(germline_samples))" to "if(germline_count >= 1 )"
+	remove any duplicate lines for the same germline sample in .tmp/cnv/configs/sample_info.txt (if applicable, happens when one group has one germline and more than one tumor samples)
+
+##merge rows with same column name
+awk -F"\t" '{a[$1] = a[$1]"\t"$2}END{for(i in a){print i""a[i]}}' input.txt > merged_input.txt 
+
+##echo 'space tab newline' -e means enable interpretation of backslash escapes
+> echo "text\ttext" will output -
+text\ttext
+whereas,
+>echo -e "text\ttext" will output -
+text	text
+
+
+##insert a line/lines after a specific string in a file
+>cat input.txt
+abc
+def
+ghi
+jkl
+>cat insert.txt
+123
+45
+>sed -i '/def/r insert.txt' input.txt
+>cat input.txt
+abc
+def
+123
+45
+ghi
+jkl
+
+##sort file based on one column
+for i in `ls *fusion_candidates.txt`; do sort -u -k1,1 $i ; done > samples.txt
+
+##line numbers
+cat file.txt | nl 
+
+##adding @ and + to xeome generated fastqs
+zcat original.fastq.gz | paste - - - - | awk -F"\t" '{print "@"$1"\t"$2"\t+\t"$4}' | tr "\t" "\n" | gzip -c > modified.fastq.gz
+
+##awk one-liner for transposing a matrix
+$ echo -  | awk '{print "1\t2\t3\n4\t5\t6\n7\t8\t9\n"}'
+1       2       3
+4       5       6
+7       8       9
+$ echo -  | awk '{print "1\t2\t3\n4\t5\t6\n7\t8\t9\n"}' |awk '{for(j=1;j<=NF;j++){arr[j]=arr[j]"\t"$j}} END {for(i in arr) print arr[i]}' | sed 's/^\t//'
+1       4       7
+2       5       8
+3       6       9
+##putting xenome summary in tab format
+for i in `cat list`; do tail -5 ${i}/classify_${i}.o* | awk '{arr[2]=arr[2]"\t"$1"\t"$2} END {for(i in arr) print arr[i]}' | sed 's/^\t//' | sed "s/^/${i}\t/"; done | wc -l
+
+###cnv analysis - patternCNV
+##if the predicted CNVs are in adjacent exons, it has a higher chance of being a true positive 
+look for signal to noise ratio of exons to filter them out - it is a better estimate than p-value - higher the SNR, the better
+usually a cut-off of <10 or <8 (to be slightly more sensitive)  
+use CNV.log2ratio of >|0.05| - second to last column in segmentation txt file
+/home/m088341/scripts/patterncnv_callcnvs.sh - summarizes segmentation file based on cnv ratio cutoffs
+use an SNR cutoff from *CNV.txt file and then cnv ratio cutoff to validate CNVs found from above summarized file
+##using a list of genes and CNV ratio & SNR cutoffs to filter the *CNV.txt file
+cat s_D-R\(Germline\)_CNV.txt |grep -w -f ../../genes.txt| awk -F"\t" '{if(($5 >= 0.45 || $5 <= -0.65) && ($9 >= 7)) print}' - | less 
+##add an extra column for showing adjacency of high-quality (SNR>=7) exons - filter using SNR -> add a line number -> filter using CNV ratio -> see if numbers are consecutive 
+
+##replace last occurence of a character in every line of file using sed 
+##one liner below replces last occurence of '@' with '\t'
+sed -i 's/\(.*\)@/\1\t/' file.txt
+
+##create several softlinks to separate directories in a loop
+for i in `cat /data2/external_data/Wang_Chen_m092469/s201182.TCGA_ov/TCGA_fusions/bodymap/list`; do cd /data2/external_data/Wang_Chen_m092469/s201182.TCGA_ov/TCGA_fusions/bodymap/${i}/tophat_${i}/; ln -s /data2/delivery/Wang_Chen_m092469/bodymap_2.0.0/secondary/2016_06_06/alignment/tophat_${i}/fusions.out .; done
+
+##convert sam to bam and sort - one liner
+for i in `cat /data2/bsi/secondary/mrna_wf_fusions/chimeric_bams/cgsl_dlmp/list`; do samtools view -bS ${i}.STAR.process_dir_pass2/Chimeric.out.sam | samtools sort - /data2/bsi/secondary/mrna_wf_fusions/chimeric_bams/cgsl_dlmp/${i}.sorted; done
+
+##subset a refFlat file for custom capture GGPS runs
+awk -F"\t" '{print $3"\t"$5"\t"$6"\t"$0}' /data5/bsi/refdata-new/ucsc/multi/annotation_database/hg19/downloaded/2014_11_13/refFlat.txt | /data5/bsi/bictools/alignment/bedtools/2.20.1/bin/intersectBed -a stdin -b capture.bed -wa | sort | uniq | cut -f4- > refflat.txt
+
+##create gene list (refSeq format) for GATK DepthOfCoverage walker - if gene by gene output is needed
+##get refSeq file from UCSC: http://gatkforums.broadinstitute.org/gatk/discussion/1329/where-can-i-get-a-gene-list-in-refseq-format
+#format it for usage with walker
+cat Pittock.refSeq | sort | uniq | tac> temp ##remove duplicates
+head -1 temp > sorted.refSeq
+tail -n +2 temp | sort -k3,3V -k5,5n -k6,6n >> sorted.refSeq   ###final file to be used
+
+##retrieve alignments from bam file by specifyiong position
+#needs index
+samtools view Liver-Gata-871_sorted.bam chr2:174461075-174461575 | less
+
+
+##Sort a FASTQ by readID
+zcat file1.fastq.gz | awk '{ printf("%s",$0); n++; if(n%4==0) { printf("\n");} else { printf("\t\t");} }' | awk '{i=index($1,"/"); printf("%s\t%s\n",substr($1,1,i-1),$0);}' | sort -k1,1 | sed 's/\t/\n/g' > file1_sorted.fastq
+
