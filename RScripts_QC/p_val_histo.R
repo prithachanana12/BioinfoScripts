@@ -1,5 +1,13 @@
+args =  commandArgs(TRUE)
+fileName=args[1]
+outfile=args[2]
+if (file.exists(fileName) == FALSE){
+  writeLines ("Usage:\nRscript p_value_histo.R filePath pathTopngFile\n");
+  quit()
+}
+
 library("ggplot2")
-de<-read.table("C:/Users/m133293/Documents/Ibrahim_tert_NASH/tgw_control.vs.case.csv", header=TRUE, sep=",")
+de<-read.table(fileName, header=TRUE, sep=",")
 
 ggplot() + geom_histogram(aes(x = de$PValue), color="black", fill="red", alpha=0.25) + scale_y_continuous(name="Count") + scale_x_continuous(name="p-value")
-ggsave("C:/Users/m133293/Documents/Ibrahim_tert_NASH/p_val_histo.png")
+ggsave(outfile)
