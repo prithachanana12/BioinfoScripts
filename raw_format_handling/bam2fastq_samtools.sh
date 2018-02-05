@@ -11,10 +11,13 @@ else
 	output_dir=$3
 	ref=$4
 	
-	#/usr/local/biotools/java/jdk1.6.0_05/bin/java -Xmx15g -Xms512m -jar $picard/SamToFastq.jar INPUT=$input_dir/$input_bam FASTQ=$output_dir/$input_bam.R1.fastq SECOND_END_FASTQ=$output_dir/$input_bam.R2.fastq VALIDATION_STRINGENCY=SILENT TMP_DIR=$output_dir/
-	/data5/bsi/bictools/alignment/samtools/1.3.1/samtools fastq -1 ${output_dir}/${input_bam}.R1.fastq -2 ${output_dir}/${input_bam}.R2.fastq --reference $ref ${input_dir}/${input_bam}
+	/data5/bsi/bictools/alignment/samtools/1.3.1/samtools view -bh -F 2048 -F 256 ${input_dir}/${input_bam} > ${output_dir}/${input_bam}.tmp.bam
+	/data5/bsi/bictools/alignment/samtools/1.3.1/samtools sort -o ${output_dir}/${input_bam}.sorted.bam -n ${output_dir}/${input_bam}.tmp.bam
+	/data5/bsi/bictools/alignment/samtools/1.3.1/samtools fastq -1 ${output_dir}/${input_bam}.R1.fastq -2 ${output_dir}/${input_bam}.R2.fastq --reference $ref ${output_dir}/${input_bam}.sorted.bam
 	
 	gzip $output_dir/$input_bam.R1.fastq
 	gzip $output_dir/$input_bam.R2.fastq
+	rm ${output_dir}/${input_bam}.tmp.bam
+	rm ${output_dir}/${input_bam}.sorted.bam
 fi	
 
