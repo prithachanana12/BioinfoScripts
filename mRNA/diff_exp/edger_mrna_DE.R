@@ -33,6 +33,8 @@ group <- c(rep(control, num_of_ctrl) , rep(case, num_of_case))
 #group <- c(rep("N", 4) , rep("DC", 6))
 # creating matrix with sample info, counts and group info
 cds=DGEList(counts, group=group)
+keep <- rowSums(cpm(cds)>1) >= min(num_of_ctrl,num_of_case) 
+cds <- cds[keep, ,keep.lib.sizes=FALSE]
 #cds
 # find number of genes with 0 counts
 #sum(cds$all.zeros)
