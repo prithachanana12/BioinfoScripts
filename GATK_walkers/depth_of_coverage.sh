@@ -18,6 +18,6 @@ gatk=/data5/bsi/bictools/alignment/gatk/3.3-0/GenomeAnalysisTK.jar
 java=/usr/local/biotools/java/jdk1.7.0_67/bin/java
 ref=/data2/bsi/reference/sequence/human/ncbi/37.1/indexed/allchr.fa
 
-$java -Xmx14g -Xms14g -jar $gatk -T DepthOfCoverage -dt NONE -R $ref $input -o $output -L $bed --summaryCoverageThreshold 1 --summaryCoverageThreshold 5 --summaryCoverageThreshold 10 --summaryCoverageThreshold 15 --summaryCoverageThreshold 20 --summaryCoverageThreshold 25 --summaryCoverageThreshold 30 --summaryCoverageThreshold 40 --summaryCoverageThreshold 50 --summaryCoverageThreshold 75 --summaryCoverageThreshold 100 --summaryCoverageThreshold 200 --summaryCoverageThreshold 500 --summaryCoverageThreshold 1000 -omitBaseOutput -omitIntervals
+$java -Xmx14g -Xms14g -jar $gatk -T DepthOfCoverage -dt NONE -R $ref $input -o $output -L $bed --summaryCoverageThreshold 1 --summaryCoverageThreshold 5 --summaryCoverageThreshold 10 --summaryCoverageThreshold 15 --summaryCoverageThreshold 20 --summaryCoverageThreshold 25 --summaryCoverageThreshold 30 --summaryCoverageThreshold 40 --summaryCoverageThreshold 50 --summaryCoverageThreshold 75 --summaryCoverageThreshold 100
 echo `date`
 

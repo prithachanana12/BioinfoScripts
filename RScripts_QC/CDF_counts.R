@@ -1,6 +1,13 @@
-raw <- read.table("/data2/bsi/secondary/Radisky_Derek_m025888/config/170821_MayoClinic_RNASeq_NotreDame/v1.2.1.5_SE_trimmed/diff_exp/expressed_allSamples.txt", row.names=1, header=TRUE)
+args =  commandArgs(TRUE)
+fileName=args[1]
+out_tiff=args[2]
+if (file.exists(fileName) == FALSE){
+  writeLines ("Usage:\nRscript plotCDF.R filePath outFilePath\n");
+  quit()
+}
+raw <- read.table(fileName, row.names=1, header=TRUE)
 rawlog <- log2(raw+1)
-png("/data2/bsi/secondary/Radisky_Derek_m025888/config/170821_MayoClinic_RNASeq_NotreDame/v1.2.1.5_SE_trimmed/diff_exp/CDF_allSamples.png",units="in",width=8,height=8,res=800)
+tiff(out_tiff,units="in",compression="lzw",width=8,height=8,res=800)
 plot(ecdf(rawlog[,1]),col="violetred3", main="Cumulative Distribution of Gene Counts", xlab="log2(raw_counts)", ylab="Proportion of genes")
 plot(ecdf(rawlog[,2]),col="royalblue", add=T)
 plot(ecdf(rawlog[,3]),col="plum", add=T)
