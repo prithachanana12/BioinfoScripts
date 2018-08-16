@@ -32,4 +32,5 @@ legend(0.8, 1,      # location of the legend on the heatmap plot
 )
 dev.off()
 gene.order.cluster <- log2(expression+0.001)[rev(vals$rowInd),vals$colInd]
-write.table(gene.order.cluster,"genes_order.txt",quote=F,sep="\t")
+gene.order.out<-paste(outFile,"_genes_order.txt",sep="")
+write.table(gene.order.cluster,gene.order.out,quote=F,sep="\t")
