@@ -39,7 +39,7 @@ if [ -z "$refGTF" ] || [ ! -d "$bamDir" ] || [ ! -d "$outDir" ] || [ -z "$sample
     usage
 fi
 
-	exec &> $outDir/logfile.txt
+	#exec &> $outDir/logfile.txt
     	set -x
     	echo `date`
 
@@ -60,6 +60,3 @@ fi
 	for i in `echo $sample | tr ':' ' '`; do 
 	/home/oge/ge2011.11/bin/linux-x64/qsub -N string_pass2_${i} -m a -M $email -wd $logs -q 1-day -l h_vmem=5G -l h_stack=10M -hold_jid $job_id -b y $stringtie/stringtie $bam/${i}/${i}.Aligned.sortedByCoord.out.bam -G $out_dir/stringtie_merged.gtf -e -B -l $i -o $out_dir/${i}/${i}_mergedTrans.gtf
 	done
-
-
-fi
