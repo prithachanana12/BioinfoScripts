@@ -97,3 +97,5 @@ samtools view Liver-Gata-871_sorted.bam chr2:174461075-174461575 | less
 ##Sort a FASTQ by readID
 zcat file1.fastq.gz | awk '{ printf("%s",$0); n++; if(n%4==0) { printf("\n");} else { printf("\t\t");} }' | awk '{i=index($1,"/"); printf("%s\t%s\n",substr($1,1,i-1),$0);}' | sort -k1,1 | sed 's/\t/\n/g' > file1_sorted.fastq
 
+##check sex of sample from BAM file
+samtools idxstats /data2/delivery/Lazaridis_Konstantinos_knl01/160728_K00203_0053_AHCNVKBBXX/primary/SL2-282A.FCHCNVKBBXX_L8_IGAATCTGA.bam | awk 'BEGIN{x=0;y=0;total=0}{if($1 == "chrX"){x=($3+$4)};if($1 == "chrY"){y=($3+$4)};total+=($3+$4)}END{print "Percent_X: "(x/total)*100"\tPercent_Y: "(y/total)*100}'
