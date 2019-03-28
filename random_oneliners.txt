@@ -99,3 +99,9 @@ zcat file1.fastq.gz | awk '{ printf("%s",$0); n++; if(n%4==0) { printf("\n");} e
 
 ##check sex of sample from BAM file
 samtools idxstats /data2/delivery/Lazaridis_Konstantinos_knl01/160728_K00203_0053_AHCNVKBBXX/primary/SL2-282A.FCHCNVKBBXX_L8_IGAATCTGA.bam | awk 'BEGIN{x=0;y=0;total=0}{if($1 == "chrX"){x=($3+$4)};if($1 == "chrY"){y=($3+$4)};total+=($3+$4)}END{print "Percent_X: "(x/total)*100"\tPercent_Y: "(y/total)*100}'
+
+##remove low expression genes - with reads lower than 30 in all of the
+#samples
+awk '{pass=0;if($2>30 && $3>30 && $4>30)pass=1; if($5>30 && $6>30 && $7>30)pass=1; if(pass>0)print}' comp2_counts.txt > comp2_expressed.txt
+
+
