@@ -1,0 +1,4 @@
+PEDFILE=/research/bsi/tools/pipelines/sl2_pipeline/scripts/add_VCF_metadata/sample_files/analysis.ped
+MOI_fam199=AR,X
+MOI_fam071=DND
+##add one MOI_ row for each family present in ped file
